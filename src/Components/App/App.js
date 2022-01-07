@@ -15,42 +15,67 @@ class App extends React.Component {
         album: 'album1',
         id: 1
       },
-    {
-      name: 'name2',
-      artist: 'artist2',
-      album: 'album2',
-      id: 2
-    }],
-    playlistName: 'my playlist',
-    playlistTracks: [{
-      name: 'name1',
-      artist: 'artist1',
-      album: 'album1',
-      id: 1
-    }]
+      {
+        name: 'name2',
+        artist: 'artist2',
+        album: 'album2',
+        id: 2
+      }],
+      playlistName: 'my playlist',
+      playlistTracks: [{
+        name: 'name1',
+        artist: 'artist1',
+        album: 'album1',
+        id: 1
+      }]
     };
 
     this.addTrack = this.addTrack.bind(this);
+    this.removeTrack = this.removeTrack.bind(this);
+    this.updatePlaylistName = this.updatePlaylistName.bind(this);
+    this.savePlaylist = this.savePlaylist.bind(this);
+    this.search = this.search.bind(this);
   }
 
   addTrack(track) {
     //adds a new track to the playlist
-    const myList = this.state.playlistTracks;
-
-    if(this.state.playlistTracks.filter( savedTrack => {
+    if (this.state.playlistTracks.filter(savedTrack => {
       return savedTrack.id === track.id
-    }).length === 0){
+    }).length === 0) {
+      const myList = this.state.playlistTracks;
       myList.push(track);
       this.setState({
-        playlistTracks : myList
+        playlistTracks: myList
       })
     }
   }
 
   removeTrack(track) {
-    const index = this.state.playlistTracks.findIndex( savedTrack => {
+    //removes a track from the playlist
+    const index = this.state.playlistTracks.findIndex(savedTrack => {
       return savedTrack.id === track.id;
     })
+    if (index !== -1) {
+      const myList = this.state.playlistTracks;
+      myList.splice(index, 1);
+      this.setState({
+        playlistTracks: myList
+      })
+    }
+  }
+
+  updatePlaylistName(name) {
+    this.setState({
+      playlistName: name
+    })
+  }
+
+  savePlaylist() {
+
+  }
+
+  search(searchTerm) {
+    console.log(searchTerm);
   }
 
   render() {
@@ -58,10 +83,15 @@ class App extends React.Component {
       <div>
         <h1>Ja<span className="highlight">mmm</span>ing</h1>
         <div className="App">
-          <SearchBar />
+          <SearchBar onSearch={this.search}/>
           <div className="App-playlist">
-            <SearchResults searchResults={this.state.searchResults} onAdd={this.addTrack}/>
-            <Playlist playlistName={this.state.playlistName} playlistTracks={this.state.playlistTracks} />
+            <SearchResults searchResults={this.state.searchResults} onAdd={this.addTrack} />
+            <Playlist
+              playlistName={this.state.playlistName} 
+              playlistTracks={this.state.playlistTracks} 
+              onRemove={this.removeTrack} 
+              onNameChange={this.updatePlaylistName}
+              onSave={this.savePlaylist}/>
           </div>
         </div>
       </div>
