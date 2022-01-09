@@ -7,13 +7,12 @@ const Spotify = {
         if (accessToken) {
             return accessToken;
         }
-        accessTokenMatch = window.location.href.match(/access_token=([^&]*)/);
-        expiresInMatch = window.location.href.match(/expires_in=([^&]*)/);
+        const accessTokenMatch = window.location.href.match(/access_token=([^&]*)/);
+        const expiresInMatch = window.location.href.match(/expires_in=([^&]*)/);
         if (accessTokenMatch && expiresInMatch) {
             accessToken = accessTokenMatch;
-            window.setTimeout(() => {
-                accessToken = '', Number(expiresInMatch) * 1000
-            })
+            expiresInMatch = Number(expiresInMatch);
+            window.setTimeout(() => accessToken = '', expiresInMatch * 1000);
             window.history.pushState('Access Token', null, '/');
             return accessToken;
         } else {
