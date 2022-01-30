@@ -1,18 +1,20 @@
 
 let accessToken;
-const clientId = '';
+const clientId = '<app client id>';
 const redirectURI = 'http://localhost:3000/';
 const Spotify = {
     getAccessToken: function () {
         if (accessToken) {
             return accessToken;
         }
+
         const accessTokenMatch = window.location.href.match(/access_token=([^&]*)/);
         const expiresInMatch = window.location.href.match(/expires_in=([^&]*)/);
         if (accessTokenMatch && expiresInMatch) {
-            accessToken = accessTokenMatch;
-            expiresInMatch = Number(expiresInMatch);
-            window.setTimeout(() => accessToken = '', expiresInMatch * 1000);
+            accessToken = accessTokenMatch[1]; //accessTokenMatch is an array
+            const expiresIn = Number(expiresInMatch[1]); //expiresInMatch is an array 
+            //clear accessToken to allow users to login again
+            window.setTimeout(() => accessToken = '', expiresIn * 1000);
             window.history.pushState('Access Token', null, '/');
             return accessToken;
         } else {
@@ -29,7 +31,7 @@ const Spotify = {
                 if (!response.ok) {
                     throw Error(response.status)
                 } else {
-                    return response.json();
+                    return response.json();                    
                 }
             })
             .then(jsonResponse => {
@@ -55,10 +57,11 @@ const Spotify = {
         const headers = {
             Authorization: `Bearer ${accessToken}`
         };
+        let userId;
         return fetch('https://api.spotify.com/v1/me', { headers: headers })
             .then(response => response.json())
             .then(jsonResponse => {
-                const userId = jsonResponse.id;
+                userId = jsonResponse.id;
                 return fetch(`https://api.spotify.com/v1/users/${userId}/playlists`,
                     {
                         headers: headers,
